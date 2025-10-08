@@ -1,4 +1,5 @@
 import { Mail, MapPin, ArrowRight } from "lucide-react";
+import { Search, ShoppingBag, Home, BookOpen, Briefcase, User } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
@@ -243,19 +244,19 @@ function PinPanel() {
   const radius = useTransform(scrollYProgress, [0, 1], [24, 0]);
 
   return (
-    <section ref={ref} className="min-h-[180vh]">
-      <div className="sticky top-10 left-0 w-full flex justify-center z-10">
-        <div className="container mx-auto px-4">
+    <section ref={ref} className="min-h-[180vh] flex justify-center">
+      <div className="sticky top-10 left-0 z-10 w-full">
+        <div className="w-full px-0">
           <motion.div
             style={{ scale, borderRadius: radius as any }}
-            className="w-screen h-screen bg-neutral-900 text-white p-8 md:p-14 shadow-2xl flex justify-center items-center"
+            className="w-full h-screen bg-neutral-900 text-white p-8 md:p-14 shadow-2xl flex justify-center items-center"
           >
-            <div className="w-full max-w-5xl mx-auto grid md:grid-cols-3 gap-10">
+            <div className="w-full grid md:grid-cols-3 gap-10 place-items-center">
               {/* Traducción */}
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 mb-4 rounded-xl bg-neutral-200 flex items-center justify-center text-2xl text-amber-800 font-bold">T</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-2 text-amber-100">Traducción</h3>
-                <p className="text-neutral-200 mb-4 text-base">
+              <div className="flex flex-col items-center text-center max-w-xs">
+                <div className="w-20 h-20 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-3xl md:text-4xl text-amber-800 font-bold">T</div>
+                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">Traducción</h3>
+                <p className="text-neutral-200 mb-6 text-lg md:text-xl leading-snug">
                   Cada palabra cuenta y cada matiz importa. Con mis traducciones, tu mensaje no solo cambia de idioma: se transforma para sonar natural, preciso y auténtico. Ya sea un artículo, un texto comercial o contenido creativo, adapto cada frase para que refleje tu intención original, respetando el estilo y la voz que quieres proyectar.
                 </p>
                 <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
@@ -267,10 +268,10 @@ function PinPanel() {
                 </ul>
               </div>
               {/* Subtitulación */}
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 mb-4 rounded-xl bg-neutral-200 flex items-center justify-center text-2xl text-amber-800 font-bold">S</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-2 text-amber-100">Subtitulación</h3>
-                <p className="text-neutral-200 mb-4 text-base">
+              <div className="flex flex-col items-center text-center max-w-xs">
+                <div className="w-20 h-20 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-3xl md:text-4xl text-amber-800 font-bold">S</div>
+                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">Subtitulación</h3>
+                <p className="text-neutral-200 mb-6 text-lg md:text-xl leading-snug">
                   Los vídeos no solo se ven, se sienten. Con mis servicios de subtitulación, cada línea encaja <span className="font-semibold text-white">perfectamente con la imagen y el ritmo del contenido</span>, manteniendo la claridad y la emoción. El resultado: un espectador que entiende, conecta y disfruta, sin distracciones ni pérdida de sentido.
                 </p>
                 <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
@@ -280,10 +281,10 @@ function PinPanel() {
                 </ul>
               </div>
               {/* Localización */}
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 mb-4 rounded-xl bg-neutral-200 flex items-center justify-center text-2xl text-amber-800 font-bold">L</div>
-                <h3 className="text-xl md:text-2xl font-bold mb-2 text-amber-100">Localización</h3>
-                <p className="text-neutral-200 mb-4 text-base">
+              <div className="flex flex-col items-center text-center max-w-xs">
+                <div className="w-20 h-20 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-3xl md:text-4xl text-amber-800 font-bold">L</div>
+                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">Localización</h3>
+                <p className="text-neutral-200 mb-6 text-lg md:text-xl leading-snug">
                   Un contenido global necesita un enfoque local. Con la localización, adapto tu texto, app o página web para que <span className="font-semibold text-white">resuene culturalmente</span>, sin perder tu identidad. Cada detalle, desde expresiones hasta referencias culturales, se ajusta para que tu público se sienta entendido y conectado.
                 </p>
                 <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
@@ -328,8 +329,8 @@ function CTA({ ctaRef }: { ctaRef: React.RefObject<HTMLDivElement> }) {
 // Nueva sección de servicios principales
 function ServiciosModernos() {
   return (
-    <section className="py-24 bg-white">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-white flex justify-center">
+      <div className="w-full max-w-6xl px-4">
         <div className="grid md:grid-cols-3 gap-10">
           {/* Traducción */}
           <div className="flex flex-col items-center text-center border border-neutral-200 rounded-2xl p-8 shadow-sm bg-neutral-50">
@@ -396,20 +397,69 @@ export default function AltraducirteScrollDemo() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900">
-      {/* Header simple fijo (marca) */}
-      <header className="fixed left-0 right-0 top-0 z-30">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between backdrop-blur bg-white/60 border-b">
-          <div className="font-semibold tracking-wide text-amber-800">{config.brand}</div>
-          <nav className="hidden md:flex gap-6 text-sm text-neutral-600">
-            <a href="#" className="hover:text-neutral-900">Inicio</a>
-            <a href="#" className="hover:text-neutral-900">Servicios</a>
-            <a href="#" className="hover:text-neutral-900">Proyectos</a>
-            <a href="#" className="hover:text-neutral-900">Sobre mí</a>
-          </nav>
+  <div className="min-h-screen text-neutral-900 flex">
+    {/* Barra superior con slide en hover, fondo siempre cubriendo el top */}
+    <div className="group/nav">
+      {/* Fondo translúcido que se estira en hover */}
+      <div
+        className="fixed top-0 left-0 w-full z-20 bg-white/60 border-b border-neutral-200 backdrop-blur-md shadow-lg transition-all duration-300 pointer-events-none"
+        style={{
+          height: '60px',
+          transition: 'height 0.3s cubic-bezier(0.4,0,0.2,1)',
+        }}
+        id="nav-bg"
+      />
+      {/* Barra completa que hace slide en hover, pero el fondo nunca se mueve, solo crece */}
+      <nav
+        className="fixed top-0 left-0 w-full z-30 flex items-center px-2 md:px-8 py-2"
+        style={{ height: '60px', transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)' }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(8px)';
+          const bg = document.getElementById('nav-bg');
+          if (bg) {
+            bg.style.height = '78px';
+            bg.style.transform = 'translateY(0)';
+          }
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+          const bg = document.getElementById('nav-bg');
+          if (bg) {
+            bg.style.height = '60px';
+            bg.style.transform = 'translateY(0)';
+          }
+        }}
+      >
+        {/* Logo tipo libro */}
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 shadow mr-4">
+          <BookOpen className="w-7 h-7 text-blue-700" />
         </div>
-      </header>
-
+        <div className="flex flex-1 items-center gap-2 md:gap-4">
+          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
+            <Home className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+            <span className="hidden md:inline text-base font-medium">Inicio</span>
+          </a>
+          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
+            <BookOpen className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+            <span className="hidden md:inline text-base font-medium">Servicios</span>
+          </a>
+          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
+            <Briefcase className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+            <span className="hidden md:inline text-base font-medium">Proyectos</span>
+          </a>
+          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
+            <User className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+            <span className="hidden md:inline text-base font-medium">Sobre mí</span>
+          </a>
+        </div>
+        <div className="flex items-center gap-2 ml-auto">
+          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-all group">
+            <Search className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+            <span className="hidden md:inline text-base font-medium">Buscar</span>
+          </a>
+        </div>
+      </nav>
+    </div>
       {/* Botón flotante tipo CTA */}
       <a
         href="mailto:altraducirte@gmail.com"
@@ -421,7 +471,8 @@ export default function AltraducirteScrollDemo() {
         </span>
       </a>
 
-      <main className="pt-16">
+  {/* Main content ocupa todo el ancho, barra superpuesta */}
+  <main className="flex-1">
         <StickyHero />
         <FeatureBlock
           title="Traducciones que respiran naturalidad"

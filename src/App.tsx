@@ -245,25 +245,58 @@ function PinPanel() {
   return (
     <section ref={ref} className="min-h-[180vh]">
       <div className="sticky top-10 left-0 w-full flex justify-center z-10">
-        <motion.div
-          style={{ scale, borderRadius: radius as any }}
-          className="w-screen bg-neutral-900 text-white p-8 md:p-14 shadow-2xl flex justify-center"
-        >
-          <div className="w-full max-w-5xl mx-auto grid md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-2xl font-semibold">Traducción</h3>
-              <p className="mt-2 text-neutral-300">Francés, inglés y ruso a español, con foco en tono y contexto cultural.</p>
+        <div className="container mx-auto px-4">
+          <motion.div
+            style={{ scale, borderRadius: radius as any }}
+            className="w-screen h-screen bg-neutral-900 text-white p-8 md:p-14 shadow-2xl flex justify-center items-center"
+          >
+            <div className="w-full max-w-5xl mx-auto grid md:grid-cols-3 gap-10">
+              {/* Traducción */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 mb-4 rounded-xl bg-neutral-200 flex items-center justify-center text-2xl text-amber-800 font-bold">T</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-amber-100">Traducción</h3>
+                <p className="text-neutral-200 mb-4 text-base">
+                  Cada palabra cuenta y cada matiz importa. Con mis traducciones, tu mensaje no solo cambia de idioma: se transforma para sonar natural, preciso y auténtico. Ya sea un artículo, un texto comercial o contenido creativo, adapto cada frase para que refleje tu intención original, respetando el estilo y la voz que quieres proyectar.
+                </p>
+                <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Traducción jurídica</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Turismo</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Marketing</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Educación</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Moda y cosmética</li>
+                </ul>
+              </div>
+              {/* Subtitulación */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 mb-4 rounded-xl bg-neutral-200 flex items-center justify-center text-2xl text-amber-800 font-bold">S</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-amber-100">Subtitulación</h3>
+                <p className="text-neutral-200 mb-4 text-base">
+                  Los vídeos no solo se ven, se sienten. Con mis servicios de subtitulación, cada línea encaja <span className="font-semibold text-white">perfectamente con la imagen y el ritmo del contenido</span>, manteniendo la claridad y la emoción. El resultado: un espectador que entiende, conecta y disfruta, sin distracciones ni pérdida de sentido.
+                </p>
+                <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Vídeos instructivos</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Proyectos cinematográficos y series</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Videotutoriales</li>
+                </ul>
+              </div>
+              {/* Localización */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 mb-4 rounded-xl bg-neutral-200 flex items-center justify-center text-2xl text-amber-800 font-bold">L</div>
+                <h3 className="text-xl md:text-2xl font-bold mb-2 text-amber-100">Localización</h3>
+                <p className="text-neutral-200 mb-4 text-base">
+                  Un contenido global necesita un enfoque local. Con la localización, adapto tu texto, app o página web para que <span className="font-semibold text-white">resuene culturalmente</span>, sin perder tu identidad. Cada detalle, desde expresiones hasta referencias culturales, se ajusta para que tu público se sienta entendido y conectado.
+                </p>
+                <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Páginas web</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Apps y software</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Ecommerce</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Videojuegos</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Textos publicitarios</li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h3 className="text-2xl font-semibold">Revisión</h3>
-              <p className="mt-2 text-neutral-300">Corrección ortotipográfica y de estilo. Entregas limpias listas para publicar.</p>
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold">Localización</h3>
-              <p className="mt-2 text-neutral-300">Web y producto. Mensajes que suenan naturales y convierten.</p>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
       <div className="h-[140vh]" />
     </section>

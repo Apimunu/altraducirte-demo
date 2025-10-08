@@ -11,6 +11,63 @@
     "description": "My name is Noelia Bas and I am a translator from French, English and Russian into Spanish"
   },
   "cta": {
-    "connect": "Let's connect!"
+    "connect": "Let's connect!",
+    "titulo": "Shall we see how your project would look?",
+    "descripcion": "This is just a scroll demo. We can adjust fonts, colors, and animations to your preferred style.",
+    "boton": "Let's work together"
+  },
+  "hook": {
+    "frase": "Behind every text there is a story worth telling well"
+  },
+  "feature": {
+    "servicios": {
+      "titulo": "Translations that breathe naturalness",
+      "descripcion": "Sample placeholder text. We explain how the message is adapted to the right register and real reader, not just grammar."
+    },
+    "proyectos": {
+      "titulo": "Clear process and on-time delivery",
+      "descripcion": "Simple plan: I receive the material, clarify the goal, create a base glossary, and deliver reviewed versions with tracked changes."
+    }
+  },
+  "pinpanel": {
+    "translation": {
+      "title": "Translation",
+      "body": "Every word counts and every nuance matters. With my translations, your message doesn't just change language: it is transformed to sound natural, precise, and authentic. Whether it's an article, a business text, or creative content, I adapt each sentence to reflect your original intent, respecting the style and voice you want to project.",
+      "list": {
+        "legal": "Legal translation",
+        "tourism": "Tourism",
+        "marketing": "Marketing",
+        "education": "Education",
+        "fashion": "Fashion and cosmetics"
+      }
+    },
+    "subtitles": {
+      "title": "Subtitling",
+      "body": {
+        "part1": "Videos are not only watched, they are felt. With my subtitling services, every line fits ",
+        "highlight": "perfectly with the image and the rhythm of the content",
+        "part2": ", maintaining clarity and emotion. The result: a viewer who understands, connects, and enjoys, without distractions or loss of meaning."
+      },
+      "list": {
+        "instructive": "Instructional videos",
+        "cinema": "Film projects and series",
+        "tutorials": "Video tutorials"
+      }
+    },
+    "localization": {
+      "title": "Localization",
+      "body": {
+        "part1": "Global content needs a local approach. With localization, I adapt your text, app, or website so it ",
+        "highlight": "resonates culturally",
+        "part2": ", without losing your identity. Every detail, from expressions to cultural references, is adjusted so your audience feels understood and connected."
+      },
+      "list": {
+        "web": "Websites",
+        "apps": "Apps and software",
+        "ecommerce": "Ecommerce",
+        "games": "Videogames",
+        "ads": "Advertising texts"
+      }
+    }
   }
 }

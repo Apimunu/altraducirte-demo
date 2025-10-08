@@ -10,8 +10,9 @@ function HookPhrase() {
   const opacity = useTransform(scrollYProgress, [1, 0.4, 0.3, 0], [1, 1, 0.2, 0]);
   // El color permanece negro puro, solo se desvanece por opacidad
   const color = "#000";
+  const { t } = useTranslation();
   return (
-  <div ref={ref} className="w-full flex justify-center mt-[-32px] md:mt-[-100px]">
+    <div ref={ref} className="w-full flex justify-center mt-[-32px] md:mt-[-100px]">
       <motion.div
         style={{ scale, opacity }}
         className="w-full max-w-3xl px-2 py-0 md:py-1"
@@ -20,7 +21,7 @@ function HookPhrase() {
           className="text-center text-3xl md:text-4xl font-semibold tracking-tight"
           style={{ color }}
         >
-          Detrás de cada texto hay una historia que merece ser bien contada
+          {t('hook.frase')}
         </motion.h2>
       </motion.div>
     </div>
@@ -88,6 +89,15 @@ function StickyHero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const opacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 1, 0]);
+  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const [lang, setLang] = useState(i18n.language);
+  useEffect(() => {
+    const handler = () => setLang(i18n.language);
+    i18n.on('languageChanged', handler);
+    return () => { i18n.off('languageChanged', handler); };
+  }, [i18n]);
+
   return (
     <section ref={ref} className="relative h-[160vh]">
       <motion.div
@@ -103,9 +113,16 @@ function StickyHero() {
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
                 <TypewriterGreetings />
               </h1>
-              <p className="mt-6 text-lg md:text-2xl font-medium">
-                Mi nombre es Noelia Bas y soy traductora de francés, inglés y ruso a español
-              </p>
+              <motion.p
+                key={lang}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="mt-6 text-lg md:text-2xl font-medium"
+              >
+                {t('hero.description')}
+              </motion.p>
             </div>
           </div>
         </div>
@@ -278,15 +295,16 @@ function FeatureBlock({ title, body, img, flip = false, id }: { title: string; b
   const y = useTransform(scrollYProgress, [0, 1], [40, -20]);
   const opacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 1]);
 
+  const { t } = useTranslation();
   return (
     <section ref={ref} className="py-24" id={id}>
       <div className={`container mx-auto grid items-center gap-12 px-6 md:grid-cols-2 ${flip ? "md:[&>div:first-child]:order-2" : ""}`}>
         <motion.div style={{ opacity, y }}>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-            {title}
+            {t(title)}
           </h2>
           <p className="mt-5 text-neutral-600 text-lg leading-relaxed">
-            {body}
+            {t(body)}
           </p>
         </motion.div>
         <motion.div style={{ opacity, y }} className="rounded-3xl overflow-hidden shadow-xl border">
@@ -304,6 +322,7 @@ function PinPanel() {
   const scale = useTransform(scrollYProgress, [0, 1], [0.95, 1.08]);
   const radius = useTransform(scrollYProgress, [0, 1], [24, 0]);
 
+  const { t } = useTranslation();
   return (
     <section ref={ref} className="min-h-[180vh] flex justify-center">
       <div className="sticky top-10 left-0 z-10 w-full">
@@ -316,44 +335,44 @@ function PinPanel() {
               {/* Traducción */}
               <div className="flex flex-col items-center text-center max-w-xs">
                 <div className="w-20 h-20 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-3xl md:text-4xl text-amber-800 font-bold">T</div>
-                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">Traducción</h3>
+                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">{t('pinpanel.translation.title')}</h3>
                 <p className="text-neutral-200 mb-6 text-lg md:text-xl leading-snug">
-                  Cada palabra cuenta y cada matiz importa. Con mis traducciones, tu mensaje no solo cambia de idioma: se transforma para sonar natural, preciso y auténtico. Ya sea un artículo, un texto comercial o contenido creativo, adapto cada frase para que refleje tu intención original, respetando el estilo y la voz que quieres proyectar.
+                  {t('pinpanel.translation.body')}
                 </p>
                 <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Traducción jurídica</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Turismo</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Marketing</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Educación</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Moda y cosmética</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.translation.list.legal')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.translation.list.tourism')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.translation.list.marketing')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.translation.list.education')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.translation.list.fashion')}</li>
                 </ul>
               </div>
               {/* Subtitulación */}
               <div className="flex flex-col items-center text-center max-w-xs">
                 <div className="w-20 h-20 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-3xl md:text-4xl text-amber-800 font-bold">S</div>
-                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">Subtitulación</h3>
+                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">{t('pinpanel.subtitles.title')}</h3>
                 <p className="text-neutral-200 mb-6 text-lg md:text-xl leading-snug">
-                  Los vídeos no solo se ven, se sienten. Con mis servicios de subtitulación, cada línea encaja <span className="font-semibold text-white">perfectamente con la imagen y el ritmo del contenido</span>, manteniendo la claridad y la emoción. El resultado: un espectador que entiende, conecta y disfruta, sin distracciones ni pérdida de sentido.
+                  {t('pinpanel.subtitles.body.part1')} <span className="font-semibold text-white">{t('pinpanel.subtitles.body.highlight')}</span>{t('pinpanel.subtitles.body.part2')}
                 </p>
                 <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Vídeos instructivos</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Proyectos cinematográficos y series</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Videotutoriales</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.subtitles.list.instructive')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.subtitles.list.cinema')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.subtitles.list.tutorials')}</li>
                 </ul>
               </div>
               {/* Localización */}
               <div className="flex flex-col items-center text-center max-w-xs">
                 <div className="w-20 h-20 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-3xl md:text-4xl text-amber-800 font-bold">L</div>
-                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">Localización</h3>
+                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-amber-100 leading-tight">{t('pinpanel.localization.title')}</h3>
                 <p className="text-neutral-200 mb-6 text-lg md:text-xl leading-snug">
-                  Un contenido global necesita un enfoque local. Con la localización, adapto tu texto, app o página web para que <span className="font-semibold text-white">resuene culturalmente</span>, sin perder tu identidad. Cada detalle, desde expresiones hasta referencias culturales, se ajusta para que tu público se sienta entendido y conectado.
+                  {t('pinpanel.localization.body.part1')} <span className="font-semibold text-white">{t('pinpanel.localization.body.highlight')}</span>{t('pinpanel.localization.body.part2')}
                 </p>
                 <ul className="text-left text-neutral-200 text-sm space-y-1 mt-2">
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Páginas web</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Apps y software</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Ecommerce</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Videojuegos</li>
-                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">Textos publicitarios</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.localization.list.web')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.localization.list.apps')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.localization.list.ecommerce')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.localization.list.games')}</li>
+                  <li className="before:content-['■'] before:mr-2 before:text-amber-400">{t('pinpanel.localization.list.ads')}</li>
                 </ul>
               </div>
             </div>
@@ -366,18 +385,19 @@ function PinPanel() {
 }
 
 function CTA({ ctaRef }: { ctaRef: React.RefObject<HTMLDivElement> }) {
+  const { t } = useTranslation();
   return (
     <section className="py-28" ref={ctaRef}>
       <div className="container mx-auto px-6 text-center">
-        <h3 className="text-3xl md:text-4xl font-semibold">¿Vemos cómo quedaría tu proyecto?</h3>
+        <h3 className="text-3xl md:text-4xl font-semibold">{t('cta.titulo')}</h3>
         <p className="mt-4 text-neutral-600 max-w-2xl mx-auto">
-          Esta es solo una demo de desplazamiento. Podemos ajustar tipografías, colores y animaciones al estilo que prefieras.
+          {t('cta.descripcion')}
         </p>
         <a
           href={`mailto:${config.email}`}
           className="inline-block mt-8 rounded-full bg-white/90 px-6 py-3 text-neutral-900 font-semibold shadow-xl border border-neutral-200 backdrop-blur hover:bg-white transition-all group text-lg"
         >
-          Trabajemos juntos
+          {t('cta.boton')}
           <span className="ml-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 group-hover:bg-blue-700 transition-all">
             <ArrowRight className="w-5 h-5 text-white" />
           </span>
@@ -389,6 +409,7 @@ function CTA({ ctaRef }: { ctaRef: React.RefObject<HTMLDivElement> }) {
 
 // Nueva sección de servicios principales
 function ServiciosModernos() {
+  const { t } = useTranslation();
   return (
     <section className="py-24 bg-white flex justify-center">
       <div className="w-full max-w-6xl px-4">
@@ -396,44 +417,44 @@ function ServiciosModernos() {
           {/* Traducción */}
           <div className="flex flex-col items-center text-center border border-neutral-200 rounded-2xl p-8 shadow-sm bg-neutral-50">
             <div className="w-24 h-24 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-4xl text-amber-800 font-bold">T</div>
-            <h3 className="text-2xl font-bold mb-4 text-amber-900">Traducción</h3>
+            <h3 className="text-2xl font-bold mb-4 text-amber-900">{t('servicios.traduccion.titulo')}</h3>
             <p className="text-neutral-700 mb-4 text-base">
-              Cada palabra cuenta y cada matiz importa. Con mis traducciones, tu mensaje no solo cambia de idioma: se transforma para sonar natural, preciso y auténtico. Ya sea un artículo, un texto comercial o contenido creativo, adapto cada frase para que refleje tu intención original, respetando el estilo y la voz que quieres proyectar.
+              {t('servicios.traduccion.descripcion')}
             </p>
             <ul className="text-left text-neutral-700 text-sm space-y-1 mt-2">
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Traducción jurídica</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Turismo</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Marketing</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Educación</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Moda y cosmética</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.traduccion.lista.juridica')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.traduccion.lista.turismo')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.traduccion.lista.marketing')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.traduccion.lista.educacion')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.traduccion.lista.moda')}</li>
             </ul>
           </div>
           {/* Subtitulación */}
           <div className="flex flex-col items-center text-center border border-neutral-200 rounded-2xl p-8 shadow-sm bg-neutral-50">
             <div className="w-24 h-24 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-4xl text-amber-800 font-bold">S</div>
-            <h3 className="text-2xl font-bold mb-4 text-amber-900">Subtitulación</h3>
+            <h3 className="text-2xl font-bold mb-4 text-amber-900">{t('servicios.subtitulacion.titulo')}</h3>
             <p className="text-neutral-700 mb-4 text-base">
-              Los vídeos no solo se ven, se sienten. Con mis servicios de subtitulación, cada línea encaja <span className="font-semibold">perfectamente con la imagen y el ritmo del contenido</span>, manteniendo la claridad y la emoción. El resultado: un espectador que entiende, conecta y disfruta, sin distracciones ni pérdida de sentido.
+              {t('servicios.subtitulacion.descripcion.parte1')} <span className="font-semibold">{t('servicios.subtitulacion.descripcion.resaltado')}</span>{t('servicios.subtitulacion.descripcion.parte2')}
             </p>
             <ul className="text-left text-neutral-700 text-sm space-y-1 mt-2">
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Vídeos instructivos</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Proyectos cinematográficos y series</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Videotutoriales</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.subtitulacion.lista.instructivos')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.subtitulacion.lista.cine')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.subtitulacion.lista.tutoriales')}</li>
             </ul>
           </div>
           {/* Localización */}
           <div className="flex flex-col items-center text-center border border-neutral-200 rounded-2xl p-8 shadow-sm bg-neutral-50">
             <div className="w-24 h-24 mb-6 rounded-xl bg-neutral-200 flex items-center justify-center text-4xl text-amber-800 font-bold">L</div>
-            <h3 className="text-2xl font-bold mb-4 text-amber-900">Localización</h3>
+            <h3 className="text-2xl font-bold mb-4 text-amber-900">{t('servicios.localizacion.titulo')}</h3>
             <p className="text-neutral-700 mb-4 text-base">
-              Un contenido global necesita un enfoque local. Con la localización, adapto tu texto, app o página web para que <span className="font-semibold">resuene culturalmente</span>, sin perder tu identidad. Cada detalle, desde expresiones hasta referencias culturales, se ajusta para que tu público se sienta entendido y conectado.
+              {t('servicios.localizacion.descripcion.parte1')} <span className="font-semibold">{t('servicios.localizacion.descripcion.resaltado')}</span>{t('servicios.localizacion.descripcion.parte2')}
             </p>
             <ul className="text-left text-neutral-700 text-sm space-y-1 mt-2">
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Páginas web</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Apps y software</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Ecommerce</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Videojuegos</li>
-              <li className="before:content-['■'] before:mr-2 before:text-amber-700">Textos publicitarios</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.localizacion.lista.web')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.localizacion.lista.apps')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.localizacion.lista.ecommerce')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.localizacion.lista.videojuegos')}</li>
+              <li className="before:content-['■'] before:mr-2 before:text-amber-700">{t('servicios.localizacion.lista.publicidad')}</li>
             </ul>
           </div>
         </div>
@@ -450,23 +471,23 @@ const globalSmoothScroll = (
 
 // Scroll lento entre secciones con offset personalizado
 // Ubicación: src/App.tsx, justo después de la constante globalSmoothScroll
-function scrollToIdSlow(id, duration = 1200, offset = 223) {
+function scrollToIdSlow(id: string, duration: number = 1200, offset: number = 223) {
   const el = document.getElementById(id);
   if (!el) return;
   // Restamos el offset para simular scroll-mt
   const y = el.getBoundingClientRect().top + window.scrollY - offset;
   const startY = window.scrollY;
   const diff = y - startY;
-  let start;
-  function step(timestamp) {
-    if (!start) start = timestamp;
+  let start: number | undefined;
+  function step(timestamp: number) {
+    if (start === undefined) start = timestamp;
     const progress = Math.min((timestamp - start) / duration, 1);
     window.scrollTo(0, startY + diff * easeInOutQuad(progress));
     if (progress < 1) {
       requestAnimationFrame(step);
     }
   }
-  function easeInOutQuad(t) {
+  function easeInOutQuad(t: number) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
   }
   requestAnimationFrame(step);
@@ -660,7 +681,7 @@ export default function AltraducirteScrollDemo() {
                   {i18n.language === 'en' && (
                     <span className="absolute inset-0 rounded-full bg-neutral-300/60 pointer-events-none" style={{zIndex:0}} />
                   )}
-                  <FlipText text="🇬🇧" />
+                  <FlipText text="EN" />
                 </button>
                 <button
                   title="Français"
@@ -718,8 +739,8 @@ export default function AltraducirteScrollDemo() {
             {/* Bloque principal de servicios, justo debajo y visible */}
             <div className="w-full max-w-5xl -mt-2 md:-mt-4">
               <FeatureBlock
-                title="Traducciones que respiran naturalidad"
-                body="Texto ficticio de ejemplo. Explicamos cómo se adapta el mensaje al registro adecuado y al lector real, no sólo a la gramática."
+                title="feature.servicios.titulo"
+                body="feature.servicios.descripcion"
                 img={config.imgs.tablet}
                 // @ts-ignore
                 id="servicios"
@@ -727,12 +748,11 @@ export default function AltraducirteScrollDemo() {
             </div>
           </section>
 
-
           <section ref={proyectosRef as any}>
             <div id="proyectos" className="scroll-mt-[0px] pt-0 md:pt-0 pb-0">
               <FeatureBlock
-                title="Proceso claro y entregas puntuales"
-                body="Plan simple: recibo el material, aclaro el objetivo, creo un glosario base y entrego versiones revisadas con control de cambios."
+                title="feature.proyectos.titulo"
+                body="feature.proyectos.descripcion"
                 img={config.imgs.notes}
                 flip
               />

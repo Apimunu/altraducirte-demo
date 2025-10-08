@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "inicio": "Inicio",
+    "servicios": "Servicios",
+    "proyectos": "Proyectos",
+    "sobre_mi": "Sobre mí",
+    "buscar": "Buscar"
+  },
+  "hero": {
+    "greeting": "Hola",
+    "description": "Mi nombre es Noelia Bas y soy traductora de francés, inglés y ruso a español"
+  },
+  "cta": {
+    "connect": "¿Conectamos?"
+  }
+}

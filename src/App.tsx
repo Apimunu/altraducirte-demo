@@ -1,7 +1,66 @@
-import { Mail, MapPin, ArrowRight } from "lucide-react";
-import { Search, ShoppingBag, Home, BookOpen, Briefcase, User } from "lucide-react";
+// Frase gancho animada con zoom y fade al hacer scroll
+function HookPhrase() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scale = useTransform(scrollYProgress, [0, 0.7], [1, 1.18]);
+  // El texto es 100% visible (negro puro) al inicio y se desvanece con el scroll
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [1, 1, 0.2, 0]);
+  // El color permanece negro puro, solo se desvanece por opacidad
+  const color = "#000";
+  return (
+    <div ref={ref} className="w-full flex justify-center mt-[-2.5rem] md:mt-[-3.5rem]">
+      <motion.div
+        style={{ scale, opacity }}
+        className="w-full max-w-3xl px-2 py-1 md:py-2"
+      >
+        <motion.h2
+          className="text-center text-3xl md:text-4xl font-semibold tracking-tight"
+          style={{ color }}
+        >
+          Detrás de cada texto hay una historia que merece ser bien contada
+        </motion.h2>
+      </motion.div>
+    </div>
+  );
+}
+// Componente para animar el cambio de texto con efecto flip
+
+import './i18n';
+import { Search, ShoppingBag, Home, BookOpen, Briefcase, User, Mail, MapPin, ArrowRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
+// (eliminado duplicado)
+// (eliminado duplicado)
+
+
+function FlipText({ text, className = "" }: { text: string; className?: string }) {
+  const [display, setDisplay] = useState(text);
+  const [flipping, setFlipping] = useState(false);
+  const prevText = useRef(text);
+  useEffect(() => {
+    if (prevText.current !== text) {
+      setFlipping(true);
+      setTimeout(() => {
+        setDisplay(text);
+      }, 120);
+      setTimeout(() => {
+        setFlipping(false);
+        prevText.current = text;
+      }, 320);
+    }
+  }, [text]);
+  return (
+    <span
+      className={`inline-block transition-transform duration-300 ${flipping ? 'animate-flip' : ''} ${className}`}
+      style={{ perspective: 400 }}
+    >
+      {display}
+    </span>
+  );
+}
+import './i18n';
+// (eliminado duplicado)
 import { useRef, useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 // --- Config rápido para demo con texto e imágenes de prueba (estilo Apple scroll) ---
 const config = {
@@ -26,7 +85,6 @@ function StickyHero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const opacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 1, 0]);
-
   return (
     <section ref={ref} className="relative h-[160vh]">
       <motion.div
@@ -211,14 +269,14 @@ function TypewriterServices() {
   );
 }
 
-function FeatureBlock({ title, body, img, flip = false }: { title: string; body: string; img: string; flip?: boolean }) {
+function FeatureBlock({ title, body, img, flip = false, id }: { title: string; body: string; img: string; flip?: boolean; id?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 20%"] });
   const y = useTransform(scrollYProgress, [0, 1], [40, -20]);
   const opacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 1]);
 
   return (
-    <section ref={ref} className="py-24">
+    <section ref={ref} className="py-24" id={id}>
       <div className={`container mx-auto grid items-center gap-12 px-6 md:grid-cols-2 ${flip ? "md:[&>div:first-child]:order-2" : ""}`}>
         <motion.div style={{ opacity, y }}>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
@@ -381,15 +439,51 @@ function ServiciosModernos() {
   );
 }
 
+// Scroll suave global para anclas
+const globalSmoothScroll = (
+  <style>{`html { scroll-behavior: smooth !important; }`}</style>
+);
+
+
 export default function AltraducirteScrollDemo() {
+  const { t, i18n } = useTranslation();
   const ctaRef = useRef<HTMLDivElement>(null);
   const [showFloating, setShowFloating] = useState(true);
+  // Estado para la sección activa
+  const [activeSection, setActiveSection] = useState<string>('inicio');
 
+  // Referencias a las secciones
+  const heroRef = useRef<HTMLElement>(null);
+  const serviciosRef = useRef<HTMLElement>(null);
+  const proyectosRef = useRef<HTMLElement>(null);
+  const sobreMiRef = useRef<HTMLElement>(null);
+
+  // Detectar sección activa en scroll
   useEffect(() => {
     function onScroll() {
       if (!ctaRef.current) return;
       const rect = ctaRef.current.getBoundingClientRect();
       setShowFloating(!(rect.top < window.innerHeight && rect.bottom > 0));
+
+      // Detectar sección visible
+      const sections = [
+        { id: 'inicio', ref: heroRef },
+        { id: 'servicios', ref: serviciosRef },
+        { id: 'proyectos', ref: proyectosRef },
+        { id: 'sobre_mi', ref: sobreMiRef },
+      ];
+      const offset = 120; // margen para activar antes
+      let found = 'inicio';
+      for (const section of sections) {
+        const el = section.ref.current;
+        if (el) {
+          const top = el.getBoundingClientRect().top;
+          if (top - offset < window.innerHeight / 2) {
+            found = section.id;
+          }
+        }
+      }
+      setActiveSection(found);
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -397,110 +491,209 @@ export default function AltraducirteScrollDemo() {
   }, []);
 
   return (
-  <div className="min-h-screen text-neutral-900 flex">
-    {/* Barra superior con slide en hover, fondo siempre cubriendo el top */}
-    <div className="group/nav">
-      {/* Fondo translúcido que se estira en hover */}
-      <div
-        className="fixed top-0 left-0 w-full z-20 bg-white/60 border-b border-neutral-200 backdrop-blur-md shadow-lg transition-all duration-300 pointer-events-none"
-        style={{
-          height: '60px',
-          transition: 'height 0.3s cubic-bezier(0.4,0,0.2,1)',
-        }}
-        id="nav-bg"
-      />
-      {/* Barra completa que hace slide en hover, pero el fondo nunca se mueve, solo crece */}
-      <nav
-        className="fixed top-0 left-0 w-full z-30 flex items-center px-2 md:px-8 py-2"
-        style={{ height: '60px', transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)' }}
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLElement).style.transform = 'translateY(8px)';
-          const bg = document.getElementById('nav-bg');
-          if (bg) {
-            bg.style.height = '78px';
-            bg.style.transform = 'translateY(0)';
-          }
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-          const bg = document.getElementById('nav-bg');
-          if (bg) {
-            bg.style.height = '60px';
-            bg.style.transform = 'translateY(0)';
-          }
-        }}
-      >
-        {/* Logo tipo libro */}
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 shadow mr-4">
-          <BookOpen className="w-7 h-7 text-blue-700" />
-        </div>
-        <div className="flex flex-1 items-center gap-2 md:gap-4">
-          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
-            <Home className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-            <span className="hidden md:inline text-base font-medium">Inicio</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
-            <BookOpen className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-            <span className="hidden md:inline text-base font-medium">Servicios</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
-            <Briefcase className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-            <span className="hidden md:inline text-base font-medium">Proyectos</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group">
-            <User className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-            <span className="hidden md:inline text-base font-medium">Sobre mí</span>
-          </a>
-        </div>
-        <div className="flex items-center gap-2 ml-auto">
-          <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-all group">
-            <Search className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-            <span className="hidden md:inline text-base font-medium">Buscar</span>
-          </a>
-        </div>
-      </nav>
-    </div>
-      {/* Botón flotante tipo CTA */}
-      <a
-        href="mailto:altraducirte@gmail.com"
-        className={`fixed left-1/2 bottom-10 z-40 -translate-x-1/2 flex items-center gap-3 px-6 py-3 rounded-full bg-white/90 shadow-xl border border-neutral-200 backdrop-blur text-lg font-semibold hover:bg-white transition-all group ${showFloating ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}
-      >
-        ¿Conectamos?
-        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 group-hover:bg-blue-700 transition-all">
-          <ArrowRight className="w-5 h-5 text-white" />
-        </span>
-      </a>
-
-  {/* Main content ocupa todo el ancho, barra superpuesta */}
-  <main className="flex-1">
-        <StickyHero />
-        <FeatureBlock
-          title="Traducciones que respiran naturalidad"
-          body="Texto ficticio de ejemplo. Explicamos cómo se adapta el mensaje al registro adecuado y al lector real, no sólo a la gramática."
-          img={config.imgs.tablet}
-        />
-        <FeatureBlock
-          title="Proceso claro y entregas puntuales"
-          body="Plan simple: recibo el material, aclaro el objetivo, creo un glosario base y entrego versiones revisadas con control de cambios."
-          img={config.imgs.notes}
-          flip
-        />
-        <PinPanel />
-        {/* Nueva sección moderna de servicios */}
-        <div ref={ctaRef}><ServiciosModernos /></div>
-        <CTA ctaRef={ctaRef} />
-        {/* Footer */}
-        <footer className="pb-12">
-          <div className="w-full flex flex-col items-center gap-3 text-sm text-neutral-600">
-            <a href={`mailto:${config.email}`} className="inline-flex items-center gap-2 hover:underline">
-              <Mail className="h-4 w-4" /> {config.email}
-            </a>
-            <div className="inline-flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> {config.location}
+    <>
+      {globalSmoothScroll}
+      <div className="min-h-screen text-neutral-900 flex">
+        {/* Barra superior con slide en hover, fondo siempre cubriendo el top */}
+        <div className="group/nav">
+          {/* Fondo translúcido que se estira en hover */}
+          <div
+            className="fixed top-0 left-0 w-full z-20 bg-white/60 border-b border-neutral-200 backdrop-blur-md shadow-lg transition-all duration-300 pointer-events-none"
+            style={{
+              height: '60px',
+              transition: 'height 0.3s cubic-bezier(0.4,0,0.2,1)',
+            }}
+            id="nav-bg"
+          />
+          {/* Barra completa que hace slide en hover, pero el fondo nunca se mueve, solo crece */}
+          <nav
+            className="fixed top-0 left-0 w-full z-30 flex items-center px-2 md:px-8 py-2"
+            style={{ height: '60px', transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)' }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.transform = 'translateY(8px)';
+              const bg = document.getElementById('nav-bg');
+              if (bg) {
+                bg.style.height = '78px';
+                bg.style.transform = 'translateY(0)';
+              }
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+              const bg = document.getElementById('nav-bg');
+              if (bg) {
+                bg.style.height = '60px';
+                bg.style.transform = 'translateY(0)';
+              }
+            }}
+          >
+            {/* Logo tipo libro */}
+            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 shadow mr-4">
+              <BookOpen className="w-7 h-7 text-blue-700" />
             </div>
-          </div>
-        </footer>
-      </main>
-    </div>
+            <div className="flex flex-1 items-center gap-2 md:gap-4">
+              <a
+                href="#"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'inicio' ? 'border-b-2 border-black' : ''}`}
+                ref={heroRef as any}
+              >
+                <Home className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden md:inline text-base font-medium">
+                  <FlipText text={t('nav.inicio')} />
+                </span>
+              </a>
+              <a
+                href="#servicios"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'servicios' ? 'border-b-2 border-black' : ''}`}
+                ref={serviciosRef as any}
+              >
+                <BookOpen className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden md:inline text-base font-medium">
+                  <FlipText text={t('nav.servicios')} />
+                </span>
+              </a>
+              <a
+                href="#"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'proyectos' ? 'border-b-2 border-black' : ''}`}
+                ref={proyectosRef as any}
+              >
+                <Briefcase className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden md:inline text-base font-medium">
+                  <FlipText text={t('nav.proyectos')} />
+                </span>
+              </a>
+              <a
+                href="#"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'sobre_mi' ? 'border-b-2 border-black' : ''}`}
+                ref={sobreMiRef as any}
+              >
+                <User className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden md:inline text-base font-medium">
+                  <FlipText text={t('nav.sobre_mi')} />
+                </span>
+              </a>
+            </div>
+            <div className="flex items-center gap-2 ml-auto">
+              <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-all group">
+                <Search className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden md:inline text-base font-medium">{t('nav.buscar')}</span>
+              </a>
+              {/* Botones de idioma */}
+              <div className="flex items-center gap-1 ml-2">
+                <button
+                  title="Español"
+                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'es' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  aria-label="Español"
+                  onClick={() => i18n.changeLanguage('es')}
+                >
+                  {i18n.language === 'es' && (
+                    <span className="absolute inset-0 rounded-full bg-neutral-300/60 pointer-events-none" style={{zIndex:0}} />
+                  )}
+                  <FlipText text="🇪🇸" />
+                </button>
+                <button
+                  title="English"
+                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'en' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  aria-label="English"
+                  onClick={() => i18n.changeLanguage('en')}
+                >
+                  {i18n.language === 'en' && (
+                    <span className="absolute inset-0 rounded-full bg-neutral-300/60 pointer-events-none" style={{zIndex:0}} />
+                  )}
+                  <FlipText text="🇬🇧" />
+                </button>
+                <button
+                  title="Français"
+                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'fr' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  aria-label="Français"
+                  onClick={() => i18n.changeLanguage('fr')}
+                >
+                  {i18n.language === 'fr' && (
+                    <span className="absolute inset-0 rounded-full bg-neutral-300/60 pointer-events-none" style={{zIndex:0}} />
+                  )}
+                  <FlipText text="🇫🇷" />
+                </button>
+                <button
+                  title="Русский"
+                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'ru' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  aria-label="Русский"
+                  onClick={() => i18n.changeLanguage('ru')}
+                >
+                  {i18n.language === 'ru' && (
+                    <span className="absolute inset-0 rounded-full bg-neutral-300/60 pointer-events-none" style={{zIndex:0}} />
+                  )}
+                  <FlipText text="🇷🇺" />
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+        {/* Botón flotante tipo CTA */}
+        <a
+          href="mailto:altraducirte@gmail.com"
+          className={`fixed left-1/2 bottom-10 z-40 -translate-x-1/2 flex items-center gap-3 px-6 py-3 rounded-full bg-white/90 shadow-xl border border-neutral-200 backdrop-blur text-lg font-semibold hover:bg-white transition-all group ${showFloating ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}
+        >
+          {t('cta.connect')}
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 group-hover:bg-blue-700 transition-all">
+            <ArrowRight className="w-5 h-5 text-white" />
+          </span>
+        </a>
+
+        {/* Main content ocupa todo el ancho, barra superpuesta */}
+        <main className="flex-1">
+          {/* StickyHero sección principal */}
+          <section ref={heroRef as any} id="inicio">
+            <StickyHero />
+          </section>
+          {/* Sección Servicios: id para scroll */}
+          <section
+            ref={serviciosRef as any}
+            id="servicios"
+            className="scroll-mt-24 pt-8 md:pt-12 pb-0 bg-white flex flex-col items-center"
+          >
+            {/* Frase gancho animada, más arriba y con menos padding vertical */}
+            <div className="w-full flex justify-center">
+              <HookPhrase />
+            </div>
+            {/* Bloque principal de servicios, justo debajo y visible */}
+            <div className="w-full max-w-5xl -mt-2 md:-mt-4">
+              <FeatureBlock
+                title="Traducciones que respiran naturalidad"
+                body="Texto ficticio de ejemplo. Explicamos cómo se adapta el mensaje al registro adecuado y al lector real, no sólo a la gramática."
+                img={config.imgs.tablet}
+                // @ts-ignore
+                id="servicios"
+              />
+            </div>
+          </section>
+
+
+          <section ref={proyectosRef as any} id="proyectos">
+            <FeatureBlock
+              title="Proceso claro y entregas puntuales"
+              body="Plan simple: recibo el material, aclaro el objetivo, creo un glosario base y entrego versiones revisadas con control de cambios."
+              img={config.imgs.notes}
+              flip
+            />
+          </section>
+          <section ref={sobreMiRef as any} id="sobre_mi">
+            <PinPanel />
+          </section>
+          {/* Nueva sección moderna de servicios */}
+          <div ref={ctaRef}><ServiciosModernos /></div>
+          <CTA ctaRef={ctaRef} />
+          {/* Footer */}
+          <footer className="pb-12">
+            <div className="w-full flex flex-col items-center gap-3 text-sm text-neutral-600">
+              <a href={`mailto:${config.email}`} className="inline-flex items-center gap-2 hover:underline">
+                <Mail className="h-4 w-4" /> {config.email}
+              </a>
+              <div className="inline-flex items-center gap-2">
+                <MapPin className="h-4 w-4" /> {config.location}
+              </div>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </>
   );
 }

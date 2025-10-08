@@ -1,6 +1,19 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Ajustes opcionales */
 html, body, #root { height: 100%; }
+
+@layer utilities {
+	.animate-flip {
+		animation: flipY 0.7s cubic-bezier(.4,2,.6,1) both;
+	}
+	@keyframes flipY {
+		0% { transform: rotateX(0deg); }
+		40% { transform: rotateX(90deg); }
+		60% { transform: rotateX(270deg); }
+		100% { transform: rotateX(360deg); }
+	}
+}

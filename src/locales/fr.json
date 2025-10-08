@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "inicio": "Accueil",
+    "servicios": "Services",
+    "proyectos": "Projets",
+    "sobre_mi": "À propos",
+    "buscar": "Rechercher"
+  },
+  "hero": {
+    "greeting": "Bonjour",
+    "description": "Je m'appelle Noelia Bas et je suis traductrice du français, de l'anglais et du russe vers l'espagnol"
+  },
+  "cta": {
+    "connect": "On se connecte ?"
+  }
+}

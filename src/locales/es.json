@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "inicio": "Inicio",
+    "servicios": "Servicios",
+    "proyectos": "Proyectos",
+    "sobre_mi": "Sobre mí",
+    "buscar": "Buscar"
+  },
+  "hero": {
+    "greeting": "Hola",
+    "description": "Mi nombre es Noelia Bas y soy traductora de francés, inglés y ruso a español"
+  },
+  "cta": {
+    "connect": "¿Conectamos?",
+    "titulo": "¿Vemos cómo quedaría tu proyecto?",
+    "descripcion": "Esta es solo una demo de desplazamiento. Podemos ajustar tipografías, colores y animaciones al estilo que prefieras.",
+    "boton": "Trabajemos juntos"
+  },
+  "hook": {
+    "frase": "Detrás de cada texto hay una historia que merece ser bien contada"
+  },
+  "feature": {
+    "servicios": {
+      "titulo": "Traducciones que respiran naturalidad",
+      "descripcion": "Texto ficticio de ejemplo. Explicamos cómo se adapta el mensaje al registro adecuado y al lector real, no sólo a la gramática."
+    },
+    "proyectos": {
+      "titulo": "Proceso claro y entregas puntuales",
+      "descripcion": "Plan simple: recibo el material, aclaro el objetivo, creo un glosario base y entrego versiones revisadas con control de cambios."
+    }
+  },
+  "pinpanel": {
+    "translation": {
+      "title": "Traducción",
+      "body": "Cada palabra cuenta y cada matiz importa. Con mis traducciones, tu mensaje no solo cambia de idioma: se transforma para sonar natural, preciso y auténtico. Ya sea un artículo, un texto comercial o contenido creativo, adapto cada frase para que refleje tu intención original, respetando el estilo y la voz que quieres proyectar.",
+      "list": {
+        "legal": "Traducción jurídica",
+        "tourism": "Turismo",
+        "marketing": "Marketing",
+        "education": "Educación",
+        "fashion": "Moda y cosmética"
+      }
+    },
+    "subtitles": {
+      "title": "Subtitulación",
+      "body": {
+        "part1": "Los vídeos no solo se ven, se sienten. Con mis servicios de subtitulación, cada línea encaja ",
+        "highlight": "perfectamente con la imagen y el ritmo del contenido",
+        "part2": ", manteniendo la claridad y la emoción. El resultado: un espectador que entiende, conecta y disfruta, sin distracciones ni pérdida de sentido."
+      },
+      "list": {
+        "instructive": "Vídeos instructivos",
+        "cinema": "Proyectos cinematográficos y series",
+        "tutorials": "Videotutoriales"
+      }
+    },
+    "localization": {
+      "title": "Localización",
+      "body": {
+        "part1": "Un contenido global necesita un enfoque local. Con la localización, adapto tu texto, app o página web para que ",
+        "highlight": "resuene culturalmente",
+        "part2": ", sin perder tu identidad. Cada detalle, desde expresiones hasta referencias culturales, se ajusta para que tu público se sienta entendido y conectado."
+      },
+      "list": {
+        "web": "Páginas web",
+        "apps": "Apps y software",
+        "ecommerce": "Ecommerce",
+        "games": "Videojuegos",
+        "ads": "Textos publicitarios"
+      }
+    }
+  }
+}

@@ -1,17 +1,20 @@
 // Frase gancho animada con zoom y fade al hacer scroll
 function HookPhrase() {
   const ref = useRef(null);
+  // Queremos que la opacidad sea 1 cuando el scroll está en 222px (scroll-mt-[222px])
+  // Suponiendo que scrollYProgress va de 0 a 1 en el rango de la sección, ajustamos el array:
+  // El 222px corresponde al inicio visual de la sección, así que la opacidad debe ser 1 en el primer tramo
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const scale = useTransform(scrollYProgress, [0, 0.7], [1, 1.18]);
-  // El texto es 100% visible (negro puro) al inicio y se desvanece con el scroll
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [1, 1, 0.2, 0]);
+  const scale = useTransform(scrollYProgress, [0.1, 0.7], [1, 1.5]);
+  // Mantener opacidad 1 hasta el 20% del progreso, luego desvanecer
+  const opacity = useTransform(scrollYProgress, [1, 0.4, 0.3, 0], [1, 1, 0.2, 0]);
   // El color permanece negro puro, solo se desvanece por opacidad
   const color = "#000";
   return (
-    <div ref={ref} className="w-full flex justify-center mt-[-2.5rem] md:mt-[-3.5rem]">
+  <div ref={ref} className="w-full flex justify-center mt-[-32px] md:mt-[-100px]">
       <motion.div
         style={{ scale, opacity }}
-        className="w-full max-w-3xl px-2 py-1 md:py-2"
+        className="w-full max-w-3xl px-2 py-0 md:py-1"
       >
         <motion.h2
           className="text-center text-3xl md:text-4xl font-semibold tracking-tight"
@@ -45,7 +48,7 @@ function FlipText({ text, className = "" }: { text: string; className?: string }
       setTimeout(() => {
         setFlipping(false);
         prevText.current = text;
-      }, 320);
+      }, 160);
     }
   }, [text]);
   return (
@@ -439,10 +442,35 @@ function ServiciosModernos() {
   );
 }
 
-// Scroll suave global para anclas
+
+// Scroll suave global personalizado (más lento)
 const globalSmoothScroll = (
-  <style>{`html { scroll-behavior: smooth !important; }`}</style>
+  <style>{`html { scroll-behavior: auto !important; }`}</style>
 );
+
+// Scroll lento entre secciones con offset personalizado
+// Ubicación: src/App.tsx, justo después de la constante globalSmoothScroll
+function scrollToIdSlow(id, duration = 1200, offset = 223) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Restamos el offset para simular scroll-mt
+  const y = el.getBoundingClientRect().top + window.scrollY - offset;
+  const startY = window.scrollY;
+  const diff = y - startY;
+  let start;
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    window.scrollTo(0, startY + diff * easeInOutQuad(progress));
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+  function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+  requestAnimationFrame(step);
+}
 
 
 export default function AltraducirteScrollDemo() {
@@ -466,11 +494,14 @@ export default function AltraducirteScrollDemo() {
       setShowFloating(!(rect.top < window.innerHeight && rect.bottom > 0));
 
       // Detectar sección visible
+      const contactoSection = document.getElementById('contacto');
       const sections = [
         { id: 'inicio', ref: heroRef },
         { id: 'servicios', ref: serviciosRef },
         { id: 'proyectos', ref: proyectosRef },
         { id: 'sobre_mi', ref: sobreMiRef },
+        // Sección contacto (usa getElementById porque no tiene ref)
+        { id: 'contacto', ref: { current: contactoSection } },
       ];
       const offset = 120; // margen para activar antes
       let found = 'inicio';
@@ -543,6 +574,11 @@ export default function AltraducirteScrollDemo() {
               </a>
               <a
                 href="#servicios"
+                onClick={e => {
+                  e.preventDefault();
+                  // Offset para servicios: 222px (ajustable)
+                  scrollToIdSlow('servicios', 1200, 222);
+                }}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'servicios' ? 'border-b-2 border-black' : ''}`}
                 ref={serviciosRef as any}
               >
@@ -552,7 +588,12 @@ export default function AltraducirteScrollDemo() {
                 </span>
               </a>
               <a
-                href="#"
+                href="#proyectos"
+                onClick={e => {
+                  e.preventDefault();
+                  // Offset para proyectos: 0px (ajustable)
+                  scrollToIdSlow('proyectos', 1200, 0);
+                }}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'proyectos' ? 'border-b-2 border-black' : ''}`}
                 ref={proyectosRef as any}
               >
@@ -563,12 +604,32 @@ export default function AltraducirteScrollDemo() {
               </a>
               <a
                 href="#"
+                onClick={e => {
+                  e.preventDefault();
+                  // Offset para sobre_mi: puedes ajustar aquí si lo necesitas
+                  scrollToIdSlow('sobre_mi', 1200, -1200);
+                }}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'sobre_mi' ? 'border-b-2 border-black' : ''}`}
                 ref={sobreMiRef as any}
               >
                 <User className="w-5 h-5 opacity-80 group-hover:opacity-100" />
                 <span className="hidden md:inline text-base font-medium">
                   <FlipText text={t('nav.sobre_mi')} />
+                </span>
+              </a>
+              {/* Botón de contacto */}
+              <a
+                href="#contacto"
+                onClick={e => {
+                  e.preventDefault();
+                  // Offset para contacto: 0px (ajustable, apunta a la sección CTA)
+                  scrollToIdSlow('contacto', 1200, 0);
+                }}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'contacto' ? 'border-b-2 border-black' : ''}`}
+              >
+                <Mail className="w-5 h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden md:inline text-base font-medium">
+                  <FlipText text="Contacto" />
                 </span>
               </a>
             </div>
@@ -648,7 +709,7 @@ export default function AltraducirteScrollDemo() {
           <section
             ref={serviciosRef as any}
             id="servicios"
-            className="scroll-mt-24 pt-8 md:pt-12 pb-0 bg-white flex flex-col items-center"
+            className="scroll-mt-[-100px] pt-0 md:pt-0 pb-0 bg-white flex flex-col items-center"
           >
             {/* Frase gancho animada, más arriba y con menos padding vertical */}
             <div className="w-full flex justify-center">
@@ -667,20 +728,25 @@ export default function AltraducirteScrollDemo() {
           </section>
 
 
-          <section ref={proyectosRef as any} id="proyectos">
-            <FeatureBlock
-              title="Proceso claro y entregas puntuales"
-              body="Plan simple: recibo el material, aclaro el objetivo, creo un glosario base y entrego versiones revisadas con control de cambios."
-              img={config.imgs.notes}
-              flip
-            />
+          <section ref={proyectosRef as any}>
+            <div id="proyectos" className="scroll-mt-[0px] pt-0 md:pt-0 pb-0">
+              <FeatureBlock
+                title="Proceso claro y entregas puntuales"
+                body="Plan simple: recibo el material, aclaro el objetivo, creo un glosario base y entrego versiones revisadas con control de cambios."
+                img={config.imgs.notes}
+                flip
+              />
+            </div>
           </section>
           <section ref={sobreMiRef as any} id="sobre_mi">
             <PinPanel />
           </section>
           {/* Nueva sección moderna de servicios */}
           <div ref={ctaRef}><ServiciosModernos /></div>
-          <CTA ctaRef={ctaRef} />
+          {/* Sección de contacto para el scroll del navbar */}
+          <section id="contacto">
+            <CTA ctaRef={ctaRef} />
+          </section>
           {/* Footer */}
           <footer className="pb-12">
             <div className="w-full flex flex-col items-center gap-3 text-sm text-neutral-600">

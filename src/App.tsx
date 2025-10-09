@@ -30,7 +30,7 @@ function HookPhrase() {
 // Componente para animar el cambio de texto con efecto flip
 
 import './i18n';
-import { Search, ShoppingBag, Home, BookOpen, Briefcase, User, Mail, MapPin, ArrowRight } from "lucide-react";
+import { Search, ShoppingBag, Home, BookOpen, Briefcase, User, Mail, MapPin, ArrowRight, Menu, Globe } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 // (eliminado duplicado)
 // (eliminado duplicado)
@@ -64,6 +64,45 @@ function FlipText({ text, className = "" }: { text: string; className?: string }
 import './i18n';
 // (eliminado duplicado)
 import { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+// --- Componente Drawer para menú lateral móvil ---
+function Drawer({ open, onClose, children }: { open: boolean, onClose: () => void, children: React.ReactNode }) {
+  // Drawer moderno y elegante
+  return createPortal(
+    <div className={`fixed inset-0 z-[1200] transition-all duration-300 ${open ? 'pointer-events-auto' : 'pointer-events-none'}`} style={{contain: 'paint'}} aria-modal="true" role="dialog">
+      {/* Fondo oscuro menos opaco */}
+      <div
+        className={`absolute inset-0 bg-black/30 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
+        style={{zIndex: 1201}}
+        onClick={onClose}
+        aria-label="Cerrar menú"
+      />
+      {/* Drawer lateral menos invasivo */}
+      <aside className={`absolute left-0 top-0 h-full w-[70vw] max-w-xs bg-white/90 shadow-lg rounded-r-xl transform transition-transform duration-300 flex flex-col ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{zIndex: 1202, willChange: 'transform', boxShadow: '0 4px 16px 0 rgba(0,0,0,0.10)'}}
+      >
+        <div className="flex-1 pt-8 pb-4 px-4 overflow-y-auto">
+          {children}
+        </div>
+        <button className="absolute top-2 right-2 p-1 rounded-full hover:bg-neutral-100 focus:outline-none" onClick={onClose} aria-label="Cerrar menú">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </aside>
+    </div>,
+    document.body
+  );
+}
+// --- Componente Dropdown para idiomas móvil ---
+function LangDropdown({ open, onClose, children }: { open: boolean, onClose: () => void, children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      <div className={`fixed inset-0 z-40 ${open ? '' : 'pointer-events-none'}`} onClick={onClose} />
+      <div className={`absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg z-50 transition-all duration-200 ${open ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+        {children}
+      </div>
+    </div>
+  );
+}
 import { useTranslation } from 'react-i18next';
 
 // --- Config rápido para demo con texto e imágenes de prueba (estilo Apple scroll) ---
@@ -500,6 +539,9 @@ export default function AltraducirteScrollDemo() {
   const [showFloating, setShowFloating] = useState(true);
   // Estado para la sección activa
   const [activeSection, setActiveSection] = useState<string>('inicio');
+  // --- NUEVOS ESTADOS PARA MENÚS MOBILE ---
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   // Referencias a las secciones
   const heroRef = useRef<HTMLElement>(null);
@@ -558,8 +600,9 @@ export default function AltraducirteScrollDemo() {
             id="nav-bg"
           />
           {/* Barra completa que hace slide en hover, pero el fondo nunca se mueve, solo crece */}
+          {/* --- NAVBAR MOBILE-FIRST --- */}
           <nav
-            className="fixed top-0 left-0 w-full z-30 flex items-center px-2 md:px-8 py-2"
+            className="fixed top-0 left-0 w-full z-30 flex flex-wrap items-center px-2 sm:px-4 md:px-8 py-1 md:py-2 gap-1 md:gap-0"
             style={{ height: '60px', transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)' }}
             onMouseEnter={e => {
               (e.currentTarget as HTMLElement).style.transform = 'translateY(8px)';
@@ -578,18 +621,33 @@ export default function AltraducirteScrollDemo() {
               }
             }}
           >
-            {/* Logo tipo libro */}
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 shadow mr-4">
-              <BookOpen className="w-7 h-7 text-blue-700" />
+            {/* Logo tipo libro y botón menú móvil juntos */}
+            <div className="flex items-center mr-2 md:mr-4">
+              <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 shadow">
+                <BookOpen className="w-6 h-6 md:w-7 md:h-7 text-blue-700" />
+              </div>
+              {/* --- BOTÓN HAMBURGUESA SOLO EN MÓVIL, a la derecha del logo --- */}
+              <button
+                className="flex md:hidden items-center gap-1 ml-2 p-2 rounded-lg hover:bg-neutral-100 focus:outline-none"
+                onClick={() => {
+                  console.log('Click en Menú, abriendo Drawer');
+                  setMobileMenuOpen(true);
+                }}
+                aria-label="Abrir menú"
+              >
+                <Menu className="w-6 h-6" />
+                <span className="font-medium text-sm">Menú</span>
+              </button>
             </div>
-            <div className="flex flex-1 items-center gap-2 md:gap-4">
+            {/* --- MENÚ PRINCIPAL: OCULTO EN MÓVIL, VISIBLE EN MD+ --- */}
+            <div className="hidden md:flex flex-1 items-center gap-1 sm:gap-2 md:gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-transparent">
               <a
                 href="#"
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'inicio' ? 'border-b-2 border-black' : ''}`}
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group text-sm md:text-base ${activeSection === 'inicio' ? 'border-b-2 border-black' : ''}`}
                 ref={heroRef as any}
               >
-                <Home className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-                <span className="hidden md:inline text-base font-medium">
+                <Home className="w-5 h-5 md:w-5 md:h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden sm:inline text-xs md:text-base font-medium">
                   <FlipText text={t('nav.inicio')} />
                 </span>
               </a>
@@ -600,11 +658,11 @@ export default function AltraducirteScrollDemo() {
                   // Offset para servicios: 222px (ajustable)
                   scrollToIdSlow('servicios', 1200, 222);
                 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'servicios' ? 'border-b-2 border-black' : ''}`}
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group text-sm md:text-base ${activeSection === 'servicios' ? 'border-b-2 border-black' : ''}`}
                 ref={serviciosRef as any}
               >
-                <BookOpen className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-                <span className="hidden md:inline text-base font-medium">
+                <BookOpen className="w-5 h-5 md:w-5 md:h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden sm:inline text-xs md:text-base font-medium">
                   <FlipText text={t('nav.servicios')} />
                 </span>
               </a>
@@ -615,11 +673,11 @@ export default function AltraducirteScrollDemo() {
                   // Offset para proyectos: 0px (ajustable)
                   scrollToIdSlow('proyectos', 1200, 0);
                 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'proyectos' ? 'border-b-2 border-black' : ''}`}
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group text-sm md:text-base ${activeSection === 'proyectos' ? 'border-b-2 border-black' : ''}`}
                 ref={proyectosRef as any}
               >
-                <Briefcase className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-                <span className="hidden md:inline text-base font-medium">
+                <Briefcase className="w-5 h-5 md:w-5 md:h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden sm:inline text-xs md:text-base font-medium">
                   <FlipText text={t('nav.proyectos')} />
                 </span>
               </a>
@@ -630,11 +688,11 @@ export default function AltraducirteScrollDemo() {
                   // Offset para sobre_mi: puedes ajustar aquí si lo necesitas
                   scrollToIdSlow('sobre_mi', 1200, -1200);
                 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'sobre_mi' ? 'border-b-2 border-black' : ''}`}
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group text-sm md:text-base ${activeSection === 'sobre_mi' ? 'border-b-2 border-black' : ''}`}
                 ref={sobreMiRef as any}
               >
-                <User className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-                <span className="hidden md:inline text-base font-medium">
+                <User className="w-5 h-5 md:w-5 md:h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden sm:inline text-xs md:text-base font-medium">
                   <FlipText text={t('nav.sobre_mi')} />
                 </span>
               </a>
@@ -646,24 +704,60 @@ export default function AltraducirteScrollDemo() {
                   // Offset para contacto: 0px (ajustable, apunta a la sección CTA)
                   scrollToIdSlow('contacto', 1200, 0);
                 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group ${activeSection === 'contacto' ? 'border-b-2 border-black' : ''}`}
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all group text-sm md:text-base ${activeSection === 'contacto' ? 'border-b-2 border-black' : ''}`}
               >
-                <Mail className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-                <span className="hidden md:inline text-base font-medium">
+                <Mail className="w-5 h-5 md:w-5 md:h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden sm:inline text-xs md:text-base font-medium">
                   <FlipText text="Contacto" />
                 </span>
               </a>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
-              <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-all group">
-                <Search className="w-5 h-5 opacity-80 group-hover:opacity-100" />
-                <span className="hidden md:inline text-base font-medium">{t('nav.buscar')}</span>
+            {/* --- BOTÓN IDIOMA MOBILE --- */}
+            <div className="flex items-center gap-1 sm:gap-2 ml-auto">
+              {/* Selector de idioma solo muestra el idioma actual */}
+              <div className="md:hidden relative">
+                <button
+                  className="flex items-center gap-1 p-2 rounded-lg hover:bg-neutral-100 focus:outline-none min-w-[60px] justify-center"
+                  onClick={() => setLangMenuOpen(open => !open)}
+                  aria-label="Seleccionar idioma"
+                >
+                  <Globe className="w-6 h-6" />
+                  <span className="font-medium text-sm">
+                    {i18n.language === 'es' && 'Español'}
+                    {i18n.language === 'en' && 'English'}
+                    {i18n.language === 'fr' && 'Français'}
+                    {i18n.language === 'ru' && 'Русский'}
+                  </span>
+                </button>
+                <LangDropdown open={langMenuOpen} onClose={() => setLangMenuOpen(false)}>
+                  <div className="flex flex-col py-2">
+                    <button onClick={() => { i18n.changeLanguage('es'); setLangMenuOpen(false); }} className="px-4 py-2 text-left hover:bg-neutral-100">Español</button>
+                    <button onClick={() => { i18n.changeLanguage('en'); setLangMenuOpen(false); }} className="px-4 py-2 text-left hover:bg-neutral-100">English</button>
+                    <button onClick={() => { i18n.changeLanguage('fr'); setLangMenuOpen(false); }} className="px-4 py-2 text-left hover:bg-neutral-100">Français</button>
+                    <button onClick={() => { i18n.changeLanguage('ru'); setLangMenuOpen(false); }} className="px-4 py-2 text-left hover:bg-neutral-100">Русский</button>
+                  </div>
+                </LangDropdown>
+              </div>
+              <a href="#" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-neutral-500 hover:bg-neutral-100 transition-all group text-xs md:text-base">
+                <Search className="w-5 h-5 md:w-5 md:h-5 opacity-80 group-hover:opacity-100" />
+                <span className="hidden sm:inline text-xs md:text-base font-medium">{t('nav.buscar')}</span>
               </a>
               {/* Botones de idioma */}
-              <div className="flex items-center gap-1 ml-2">
+              {/* --- BOTONES DE IDIOMA SOLO EN DESKTOP --- */}
+              <div className="hidden md:flex items-center gap-1 sm:gap-2 ml-1">
+          {/* --- DRAWER MENÚ LATERAL MOBILE --- */}
+          <Drawer open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}>
+            <nav className="flex flex-col gap-2 p-6">
+              <button onClick={() => { setMobileMenuOpen(false); scrollToIdSlow('inicio', 800, 0); }} className="flex items-center gap-2 text-neutral-800 py-2 px-3 rounded-lg hover:bg-neutral-100"><Home className="w-5 h-5" /> {t('nav.inicio')}</button>
+              <button onClick={() => { setMobileMenuOpen(false); scrollToIdSlow('servicios', 800, 0); }} className="flex items-center gap-2 text-neutral-800 py-2 px-3 rounded-lg hover:bg-neutral-100"><BookOpen className="w-5 h-5" /> {t('nav.servicios')}</button>
+              <button onClick={() => { setMobileMenuOpen(false); scrollToIdSlow('proyectos', 800, 0); }} className="flex items-center gap-2 text-neutral-800 py-2 px-3 rounded-lg hover:bg-neutral-100"><Briefcase className="w-5 h-5" /> {t('nav.proyectos')}</button>
+              <button onClick={() => { setMobileMenuOpen(false); scrollToIdSlow('sobre_mi', 800, 0); }} className="flex items-center gap-2 text-neutral-800 py-2 px-3 rounded-lg hover:bg-neutral-100"><User className="w-5 h-5" /> {t('nav.sobre_mi')}</button>
+              <button onClick={() => { setMobileMenuOpen(false); scrollToIdSlow('contacto', 800, 0); }} className="flex items-center gap-2 text-neutral-800 py-2 px-3 rounded-lg hover:bg-neutral-100"><Mail className="w-5 h-5" /> Contacto</button>
+            </nav>
+          </Drawer>
                 <button
                   title="Español"
-                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'es' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  className={`text-lg md:text-xl px-1 sm:px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'es' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
                   aria-label="Español"
                   onClick={() => i18n.changeLanguage('es')}
                 >
@@ -674,7 +768,7 @@ export default function AltraducirteScrollDemo() {
                 </button>
                 <button
                   title="English"
-                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'en' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  className={`text-lg md:text-xl px-1 sm:px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'en' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
                   aria-label="English"
                   onClick={() => i18n.changeLanguage('en')}
                 >
@@ -685,7 +779,7 @@ export default function AltraducirteScrollDemo() {
                 </button>
                 <button
                   title="Français"
-                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'fr' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  className={`text-lg md:text-xl px-1 sm:px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'fr' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
                   aria-label="Français"
                   onClick={() => i18n.changeLanguage('fr')}
                 >
@@ -696,7 +790,7 @@ export default function AltraducirteScrollDemo() {
                 </button>
                 <button
                   title="Русский"
-                  className={`text-xl px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'ru' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
+                  className={`text-lg md:text-xl px-1 sm:px-2 py-1 rounded-full transition-all relative overflow-visible ${i18n.language === 'ru' ? 'bg-transparent' : 'hover:bg-neutral-100'}`}
                   aria-label="Русский"
                   onClick={() => i18n.changeLanguage('ru')}
                 >
